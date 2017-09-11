@@ -5,241 +5,464 @@
 <p>I'm hosted with GitHub Pages.</p>
   <p>This is my first website</p>
   <p> Lets not fuck it up</p>
-   <p>
-
-        Video Game Trivia
-
-        <br />
-
-        Asking question <span id="NumberAsked">1</span> of 10 with <span id="NumberCorrect">0</span> answers correct</p>
-
-    <p>
-
-        <span id="TriviaQuestion">???</span>
-
-    </p>
-
-    <p>
-
-        &nbsp;
-
-        <input id="RadioTrue" type="radio" value="true" name="answer" checked="checked" /> True
-
-        &nbsp;&nbsp;&nbsp;
-
-        <input id="RadioFalse" type="radio" value="false" name="answer" /> False
-
-    </p>
-
-    <p>
-
-        <input id="ButtonContinue" onclick="checkAnswer();" type="button" value="continue" />
-
-    </p>
-
- 
-
-    <script language="javascript" type="text/javascript">
-
-        // Array of trivia data
-
-        var TriviaData = new Array(10)
-
-        createTwoDimensionalArray(3);
-
- 
-
-        // Variables to track state of the game
-
-        // i.e. number questions asked, current correct total and current question
-
-        var questionsAsked = 0;
-
-        var totalCorrect = 0;
-
-        var currentQuestion = 0;
-
-        var selectionValid = false;
-
- 
-
-        // Questions
-
-        TriviaData[0][0] = "Donkey Kong, Pac-Man and Tempest were all released in the same year.";
-
-        TriviaData[1][0] = "Capcom is a Chinese company.";
-
-        TriviaData[2][0] = "Othello was the first arcade game released by Nintendo.";
-
-        TriviaData[3][0] = "The Atari 2600 video game system was first released in 1975.";
-
-        TriviaData[4][0] = "The Sega Saturn game system was released first in the U.S. in 1995.";
-
-        TriviaData[5][0] = "The legendary game Doom was released in 1993 for the PC.";
-
-        TriviaData[6][0] = "Dragon's Lair was the first arcade game to feature laser-disc technology.";
-
-        TriviaData[7][0] = "In 1990, Nintendo and Sega went to court over the rights to Tetris.";
-
-        TriviaData[8][0] = "In 1996 Nintendo sells its billionth cartridge worldwide.";
-
-        TriviaData[9][0] = "Microsoft first released the Xbox gaming system worldwide in 2001.";
-
-   
-
-        // Answers
-
-        TriviaData[0][1] = "true";
-
-        TriviaData[1][1] = "false";
-
-        TriviaData[2][1] = "true";
-
-        TriviaData[3][1] = "false";
-
-        TriviaData[4][1] = "false";
-
-        TriviaData[5][1] = "true";
-
-        TriviaData[6][1] = "true";
-
-        TriviaData[7][1] = "false";
-
-        TriviaData[8][1] = "true";
-
-        TriviaData[9][1] = "false";
-
- 
-
-        // Has question been asked
-
-        // -- necessary because we are asking in random order
-
-        TriviaData[0][2] = "no";
-
-        TriviaData[1][2] = "no";
-
-        TriviaData[2][2] = "no";
-
-        TriviaData[3][2] = "no";
-
-        TriviaData[4][2] = "no";
-
-        TriviaData[5][2] = "no";
-
-        TriviaData[6][2] = "no";
-
-        TriviaData[7][2] = "no";
-
-        TriviaData[8][2] = "no";
-
-        TriviaData[9][2] = "no";
-
- 
-
-        // Load up first question
-
-        setQuestion();
-
- 
-
-        // Sets question text and indicator so that we know the question has been displayed
-
-        function setQuestion() {
-
-            selectionValid = false; // Flag to make sure question has not been asked yet
-
-            while (selectionValid == false) {
-
-                currentQuestion = Math.floor(Math.random() * 10); // randomly select starting question
-
-                if (TriviaData[currentQuestion][2] == "no") {
-
-                    selectionValid = true;
-
-                }
-
-            }
-
-            document.getElementById("TriviaQuestion").innerHTML = TriviaData[currentQuestion][0];
-
-            TriviaData[currentQuestion][2] = "yes";
-
-            questionsAsked = questionsAsked + 1;
-
+   <p>/**
+ * Copyright 2013 John Smith
+ *
+ * This file is part of Jewelsea Tic-Tac-Toe.
+ *
+ * Jewelsea Tic-Tac-Toe is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Jewelsea Tic-Tac-Toe is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Jewelsea Tic-Tac-Toe.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contact details: http://jewelsea.wordpress.com
+ *
+ * icon image license => creative commons with attribution:
+ *   http://creativecommons.org/licenses/by/3.0/
+ * icon image creator attribution:
+ *   http://www.doublejdesign.co.uk/products-page/icons/origami-colour-pencil
+ */
+
+import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
+import javafx.event.*;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+
+import java.util.*;
+
+public class TicTacToe extends Application {
+  @Override public void start(Stage stage) throws Exception {
+    GameManager gameManager = new GameManager();
+
+    Scene scene = gameManager.getGameScene();
+    scene.getStylesheets().add(
+      getResource(
+        "tictactoe-blueskin.css"
+      )
+    );
+
+    stage.setTitle("Tic-Tac-Toe");
+    stage.getIcons().add(SquareSkin.crossImage);
+    stage.setScene(scene);
+    stage.show();
+  }
+
+  private String getResource(String resourceName) {
+    return getClass().getResource(resourceName).toExternalForm();
+  }
+
+  public static void main(String[] args) {
+    Application.launch(TicTacToe.class);
+  }
+}
+
+class GameManager {
+  private Scene gameScene;
+  private Game  game;
+
+  GameManager() {
+    newGame();
+  }
+
+  public void newGame() {
+    game = new Game(this);
+
+    if (gameScene == null) {
+      gameScene = new Scene(game.getSkin());
+    } else {
+      gameScene.setRoot(game.getSkin());
+    }
+  }
+
+  public void quit() {
+    gameScene.getWindow().hide();
+  }
+
+  public Game getGame() {
+    return game;
+  }
+
+  public Scene getGameScene() {
+    return gameScene;
+  }
+}
+
+class GameControls extends HBox {
+  GameControls(final GameManager gameManager, final Game game) {
+    getStyleClass().add("game-controls");
+
+    visibleProperty().bind(game.gameOverProperty());
+
+    Label playAgainLabel = new Label("Play Again?");
+    playAgainLabel.getStyleClass().add("info");
+
+    Button playAgainButton = new Button("Yes");
+    playAgainButton.getStyleClass().add("play-again");
+    playAgainButton.setDefaultButton(true);
+    playAgainButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override public void handle(ActionEvent actionEvent) {
+        gameManager.newGame();
+      }
+    });
+
+    Button exitButton = new Button("No");
+    playAgainButton.getStyleClass().add("exit");
+    exitButton.setCancelButton(true);
+    exitButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent actionEvent) {
+        gameManager.quit();
+      }
+    });
+
+    getChildren().setAll(
+      playAgainLabel,
+      playAgainButton,
+      exitButton
+    );
+  }
+}
+
+class StatusIndicator extends HBox {
+  private final ImageView playerToken = new ImageView();
+  private final Label     playerLabel = new Label("Current Player: ");
+
+  StatusIndicator(Game game) {
+    getStyleClass().add("status-indicator");
+
+    bindIndicatorFieldsToGame(game);
+
+    playerToken.setFitHeight(32);
+    playerToken.setPreserveRatio(true);
+
+    playerLabel.getStyleClass().add("info");
+
+    getChildren().addAll(playerLabel, playerToken);
+  }
+
+  private void bindIndicatorFieldsToGame(Game game) {
+    playerToken.imageProperty().bind(
+      Bindings.when(
+        game.currentPlayerProperty().isEqualTo(Square.State.NOUGHT)
+      )
+        .then(SquareSkin.noughtImage)
+        .otherwise(
+            Bindings.when(
+                game.currentPlayerProperty().isEqualTo(Square.State.CROSS)
+            )
+                .then(SquareSkin.crossImage)
+                .otherwise((Image) null)
+        )
+    );
+
+    playerLabel.textProperty().bind(
+        Bindings.when(
+            game.gameOverProperty().not()
+        )
+            .then("Current Player: ")
+            .otherwise(
+                Bindings.when(
+                    game.winnerProperty().isEqualTo(Square.State.EMPTY)
+                )
+                    .then("Draw")
+                    .otherwise("Winning Player: ")
+            )
+    );
+  }
+}
+
+class Game {
+  private GameSkin skin;
+  private Board board = new Board(this);
+  private WinningStrategy winningStrategy = new WinningStrategy(board);
+
+  private ReadOnlyObjectWrapper<Square.State> currentPlayer = new ReadOnlyObjectWrapper<>(Square.State.CROSS);
+  public ReadOnlyObjectProperty<Square.State> currentPlayerProperty() {
+    return currentPlayer.getReadOnlyProperty();
+  }
+  public Square.State getCurrentPlayer() {
+    return currentPlayer.get();
+  }
+
+  private ReadOnlyObjectWrapper<Square.State> winner = new ReadOnlyObjectWrapper<>(Square.State.EMPTY);
+  public ReadOnlyObjectProperty<Square.State> winnerProperty() {
+    return winner.getReadOnlyProperty();
+  }
+
+  private ReadOnlyBooleanWrapper drawn = new ReadOnlyBooleanWrapper(false);
+  public ReadOnlyBooleanProperty drawnProperty() {
+    return drawn.getReadOnlyProperty();
+  }
+  public boolean isDrawn() {
+    return drawn.get();
+  }
+
+  private ReadOnlyBooleanWrapper gameOver = new ReadOnlyBooleanWrapper(false);
+  public ReadOnlyBooleanProperty gameOverProperty() {
+    return gameOver.getReadOnlyProperty();
+  }
+  public boolean isGameOver() {
+    return gameOver.get();
+  }
+
+  public Game(GameManager gameManager) {
+    gameOver.bind(
+      winnerProperty().isNotEqualTo(Square.State.EMPTY)
+      .or(drawnProperty())
+    );
+
+    skin = new GameSkin(gameManager, this);
+  }
+
+  public Board getBoard() {
+    return board;
+  }
+
+  public void nextTurn() {
+    if (isGameOver()) return;
+
+    switch (currentPlayer.get()) {
+      case EMPTY:
+      case NOUGHT: currentPlayer.set(Square.State.CROSS);  break;
+      case CROSS:  currentPlayer.set(Square.State.NOUGHT); break;
+    }
+  }
+
+  private void checkForWinner() {
+    winner.set(winningStrategy.getWinner());
+    drawn.set(winningStrategy.isDrawn());
+
+    if (isDrawn()) {
+      currentPlayer.set(Square.State.EMPTY);
+    }
+  }
+
+  public void boardUpdated() {
+    checkForWinner();
+  }
+
+  public Parent getSkin() {
+    return skin;
+  }
+}
+
+class GameSkin extends VBox {
+  GameSkin(GameManager gameManager, Game game) {
+    getChildren().addAll(
+        game.getBoard().getSkin(),
+        new StatusIndicator(game),
+        new GameControls(gameManager, game)
+    );
+  }
+}
+
+class WinningStrategy {
+  private final Board board;
+
+  private static final int NOUGHT_WON = 3;
+  private static final int CROSS_WON  = 30;
+
+  private static final Map<Square.State, Integer> values = new HashMap<>();
+  static {
+    values.put(Square.State.EMPTY,  0);
+    values.put(Square.State.NOUGHT, 1);
+    values.put(Square.State.CROSS,  10);
+  }
+
+  public WinningStrategy(Board board) {
+    this.board = board;
+  }
+
+  public Square.State getWinner() {
+    for (int i = 0; i < 3; i++) {
+      int score = 0;
+      for (int j = 0; j < 3; j++) {
+        score += valueOf(i, j);
+      }
+      if (isWinning(score)) {
+        return winner(score);
+      }
+    }
+
+    for (int i = 0; i < 3; i++) {
+      int score = 0;
+      for (int j = 0; j < 3; j++) {
+        score += valueOf(j, i);
+      }
+      if (isWinning(score)) {
+        return winner(score);
+      }
+    }
+
+    int score = 0;
+    score += valueOf(0, 0);
+    score += valueOf(1, 1);
+    score += valueOf(2, 2);
+    if (isWinning(score)) {
+      return winner(score);
+    }
+
+    score = 0;
+    score += valueOf(2, 0);
+    score += valueOf(1, 1);
+    score += valueOf(0, 2);
+    if (isWinning(score)) {
+      return winner(score);
+    }
+
+    return Square.State.EMPTY;
+  }
+
+  public boolean isDrawn() {
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        if (board.getSquare(i, j).getState() == Square.State.EMPTY) {
+          return false;
         }
+      }
+    }
 
- 
+    return getWinner() == Square.State.EMPTY;
+  }
 
-        function processAnswer(myAnswer) {
+  private Integer valueOf(int i, int j) {
+    return values.get(board.getSquare(i, j).getState());
+  }
 
-            if (TriviaData[currentQuestion][1] == myAnswer) {
+  private boolean isWinning(int score) {
+    return score == NOUGHT_WON || score == CROSS_WON;
+  }
 
-                // answer correct
+  private Square.State winner(int score) {
+    if (score == NOUGHT_WON) return Square.State.NOUGHT;
+    if (score == CROSS_WON)  return Square.State.CROSS;
 
-                totalCorrect = totalCorrect + 1;
+    return Square.State.EMPTY;
+  }
+}
 
-            }
+class Board {
+  private final BoardSkin skin;
 
+  private final Square[][] squares = new Square[3][3];
+
+  public Board(Game game) {
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        squares[i][j] = new Square(game);
+      }
+    }
+
+    skin = new BoardSkin(this);
+  }
+
+  public Square getSquare(int i, int j) {
+    return squares[i][j];
+  }
+
+  public Node getSkin() {
+    return skin;
+  }
+}
+
+class BoardSkin extends GridPane {
+  BoardSkin(Board board) {
+    getStyleClass().add("board");
+
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        add(board.getSquare(i, j).getSkin(), i, j);
+      }
+    }
+  }
+}
+
+class Square {
+  enum State { EMPTY, NOUGHT, CROSS }
+
+  private final SquareSkin skin;
+
+  private ReadOnlyObjectWrapper<State> state = new ReadOnlyObjectWrapper<>(State.EMPTY);
+  public ReadOnlyObjectProperty<State> stateProperty() {
+    return state.getReadOnlyProperty();
+  }
+  public State getState() {
+    return state.get();
+  }
+
+  private final Game game;
+
+  public Square(Game game) {
+    this.game = game;
+
+    skin = new SquareSkin(this);
+  }
+
+  public void pressed() {
+    if (!game.isGameOver() && state.get() == State.EMPTY) {
+      state.set(game.getCurrentPlayer());
+      game.boardUpdated();
+      game.nextTurn();
+    }
+  }
+
+  public Node getSkin() {
+    return skin;
+  }
+}
+
+class SquareSkin extends StackPane {
+  static final Image noughtImage = new Image(
+      "http://icons.iconarchive.com/icons/double-j-design/origami-colored-pencil/128/green-cd-icon.png"
+  );
+  static final Image crossImage = new Image(
+      "http://icons.iconarchive.com/icons/double-j-design/origami-colored-pencil/128/blue-cross-icon.png"
+  );
+
+  private final ImageView imageView = new ImageView();
+
+  SquareSkin(final Square square) {
+    getStyleClass().add("square");
+
+    imageView.setMouseTransparent(true);
+
+    getChildren().setAll(imageView);
+    setPrefSize(crossImage.getHeight() + 20, crossImage.getHeight() + 20);
+
+    setOnMousePressed(new EventHandler<MouseEvent>() {
+      @Override public void handle(MouseEvent mouseEvent) {
+        square.pressed();
+      }
+    });
+
+    square.stateProperty().addListener(new ChangeListener<Square.State>() {
+      @Override public void changed(ObservableValue<? extends Square.State> observableValue, Square.State oldState, Square.State state) {
+        switch (state) {
+          case EMPTY:  imageView.setImage(null);        break;
+          case NOUGHT: imageView.setImage(noughtImage); break;
+          case CROSS:  imageView.setImage(crossImage);  break;
         }
-
- 
-
-        // This function creates our two dimensional array
-
-        function createTwoDimensionalArray(arraySize) {
-
-            for (i = 0; i < TriviaData.length; ++i)
-
-                TriviaData[i] = new Array(arraySize);
-
-        }
-
- 
-
-        // This function checks the answer, updates correct total
-
-        // and randomly selects the next question
-
-        function checkAnswer() {
-
-            if (document.getElementById("RadioTrue").checked) {
-
-                processAnswer("true");
-
-            }
-
-            else {
-
-                processAnswer("false");
-
-            }
-
-            // get next question if not asked all yet
-
-            if (questionsAsked < 10) {
-
-                setQuestion();
-
-            }
-
-            // final question asked - disable button and show final results
-
-            else {
-
-                alert("Quiz complete! You got " + totalCorrect + " correct out of 10.");
-
-                document.getElementById("ButtonContinue").disabled = true;
-
-            }
-
-            // update totals
-
-            document.getElementById("NumberAsked").innerHTML = questionsAsked;
-
-            document.getElementById("NumberCorrect").innerHTML = totalCorrect;
-
-        }
+      }
+    });
+  }
+}
 
  
 
